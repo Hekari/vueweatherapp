@@ -8,19 +8,26 @@
         {{ city.name }} ({{ city.temp }}°C, {{ city.humidity }}%)
         <button @click="showChart(city.id)">Wykres</button>
         <button @click="deleteCity(city)">Usuń</button>
+        <button @click="hideChart">Zamknij wykres</button>
       </li>
     </ul>
-    <div v-if="showChartForCity">
-      <h1>Wykres temperatury i wilgotności w mieście {{ currentCityName }}</h1>
-      <canvas v-if="showChartForCity" ref="chart" id="temp"></canvas>
+    <div v-if="showChartForCity" class="charts">
+      <h1 v-if="showCurrentCityH">Wykres temperatury i wilgotności w mieście {{ currentCityName }}</h1>
       <!-- kod wykresu -->
+      <div class="chart-container">
+        <canvas id="temp"></canvas>
+      </div>
+      <div class="chart-container">
+        <canvas  id="humidity"></canvas>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from "axios";
-import chart from "chart.js"
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 export default {
   data() {
     return {
@@ -28,38 +35,40 @@ export default {
       { id: 2643743, name: "London" },
         { id: 5128581, name: "New York" },
         { id: 2968815, name: "Paris" },
-      
       ],
       showChartForCity: false,
-      chartData: {
-        labels: [], // labels for the x-axis
-        datasets: [
-          {
-            label: "Temperature",
-            data: [], // data for the temperature dataset
-            backgroundColor: "rgba(255, 99, 132, 0.2)",
-            borderColor: "rgba(255, 99, 132, 1)",
-            borderWidth: 1,
-          },
-          {
-            label: "Humidity",
-            data: [], // data for the humidity dataset
-            backgroundColor: "rgba(54, 162, 235, 0.2)",
-            borderColor: "rgba(54, 162, 235, 1)",
-            borderWidth: 1,
-          },
-        ],
-      },
-      chartOptions: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
+      showCurrentCityH:true,
       currentCityName: "",
       currentCityData: [],
-      searchTerm:""
+      searchTerm:"",
+      tempChart: null,
+      humidityChart: null,
+      chartData: {
+        labels: [],
+        datasets: [
+          {
+            label: 'Temperatura',
+            backgroundColor: '#f87979',
+            data: []
+          },
+          {
+            label: 'Wilgotność',
+            backgroundColor: '#7ac5cd',
+            data: []
+          }
+        ]
+      },
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+                y: {
+                    beginAtZero: false
+                }
+            },
+      }
+      
+      
     };
   },
   created() {
@@ -78,9 +87,6 @@ export default {
   },
   methods: {
     async fetchWeatherData() {
-      this.chartData.labels = [];
-    this.chartData.datasets[0].data = [];
-    this.chartData.datasets[1].data = [];
       const API_KEY='9b2403ddb324ffabf1c05f8b056b9b71'
       for (let city of this.cities) {
         let response = await axios.get(
@@ -88,22 +94,43 @@ export default {
           );
           city.temp = response.data.main.temp;
           city.humidity = response.data.main.humidity;
-          this.chartData.labels.push(city.name);
-          this.chartData.datasets[0].data.push(city.temp);
-          this.chartData.datasets[1].data.push(city.humidity);
-          localStorage.setItem('cities', JSON.stringify(this.cities));
       }
     },
     showChart(cityId) {
-      this.currentCityData = this.cities.find(city => city.id === cityId);
-      this.currentCityName = this.currentCityData.name;
-      this.showChartForCity = true;
-      // tutaj umieść kod do wyświetlenia wykresu
-    },
+      this.currentCityName = this.cities.find((city) => city.id === cityId).name;
+this.currentCityData = this.cities.find((city) => city.id === cityId);
+this.chartData.labels = [];
+this.chartData.datasets[0].data = [];
+this.chartData.datasets[1].data = [];
+this.chartData.labels.push("Temp");
+this.chartData.datasets[0].data.push({x: new Date(), y: this.currentCityData.temp});
+this.chartData.datasets[1].data.push({x: new Date(), y: this.currentCityData.humidity});
+this.showChartForCity = true;
+this.showCurrentCityH=true;
+setTimeout(() => {
+this.createCharts();
+}, 0);
+  },
+  createCharts() {
+let tempCtx = document.getElementById("temp").getContext("2d");
+let humidityCtx = document.getElementById("humidity").getContext("2d");
+this.tempChart = new Chart(tempCtx, {
+type: 'bar',
+data: this.chartData,
+options: this.chartOptions,
+});
+this.humidityChart = new Chart(humidityCtx, {
+type: "bar",
+data: this.chartData,
+options: this.chartOptions,
+});
+
+},
   deleteCity(city) {
     let index = this.cities.findIndex(c => c.id === city.id);
     this.cities.splice(index, 1);
   },
+  
   addCity() {
     const jsonFile = require('./city.list.json');
       // // Konwersja pliku JSON na tablicę
@@ -114,19 +141,21 @@ export default {
   let cityExists = this.cities.find(city => city.name === this.searchTerm);
   if (!cityExists) {
     this.cities.push({ id: newCity.id, name: this.searchTerm });
+    this.searchTerm=""
   } else {
     console.log(`Error: City ${this.searchTerm} is already in the list.`);
   }
 }
-console.log(this.cities);
   },
-  mounted(){
-    this.chart = new chart(this.$refs.chart, {
-      type: "bar",
-      data: this.chartData,
-      options: this.chartOptions,
-    });
+  hideChart(){
+    if (this.tempChart || this.humidityChart) {
+        this.tempChart.destroy();
+        this.humidityChart.destroy();
+        this.showCurrentCityH=false;
+      }
   }
+  
+  
   }
 };
 </script>
