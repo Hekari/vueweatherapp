@@ -1,7 +1,13 @@
 <template>
+  <nav>
+
+    <router-link to="/">Logout</router-link> 
+  </nav>
     <div class="Logged">
-      <input type="text" v-model="searchTerm" placeholder="Dodaj miasto">
-      <button @click="addCity">Dodaj</button>
+      <form class="d-flex" role="search">
+      <input  v-model="searchTerm" class="form-control me-2" type="search" placeholder="Dodaj kolejne Miasto" aria-label="Search">
+      <button @click="addCity" class="btn btn-outline-success" type="submit">Dodaj</button>
+      </form>
     <h1>Obserwowane miasta</h1>
     <ul>
       <li v-for="city in cities" :key="city.id">
@@ -163,5 +169,16 @@ options: this.chartOptions,
 <style lang="scss" scoped>
 li{
   list-style-type: none;
+}
+*,*::after,*::before{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+nav{
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 0;
+  margin-right: 2rem;
 }
 </style>

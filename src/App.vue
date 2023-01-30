@@ -1,11 +1,19 @@
 <template>
   <nav>
-    <router-link to="/">Logout</router-link> |
-    <router-link to="/login">Login</router-link>
+    <router-link v-if="authCred" to="/">Logout</router-link> 
   </nav>
   <router-view/>
+  
 </template>
-
+<script>
+export default{
+  data(){
+    return{
+      authCred:false
+    }
+  },
+}
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
