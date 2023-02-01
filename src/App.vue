@@ -11,11 +11,6 @@ export default{
     return{
       authCred:false
     }
-  },
-  methods:{
-    onC(){
-
-    }
   }
 }
 </script>
