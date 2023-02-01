@@ -1,6 +1,7 @@
 <template>
    <div class="login">
-        <form>
+    <div class="logo"><span><i class="fa-solid fa-tornado"></i>Weather</span><b>Forecast</b></div>
+      <form>
   <!-- Email input -->
   <div class="form-outline mb-5">
     <input v-model="login" type="login" id="form2Example1" class="form-control" />
@@ -10,11 +11,11 @@
   <!-- Password input -->
   <div class="form-outline mb-5">
     <input v-model="password" type="password" id="form2Example2" class="form-control" />
-    <label class="form-label" for="form2Example2">Password</label>
+    <label class="form-label" for="form2Example2">Hasło</label>
   </div>
 
   <!-- Submit button -->
-  <button @click="checkAuth" type="button" class="btn btn-primary btn-block mb-4">Sign in</button>
+  <button  @click="checkAuth" type="button" class="btn btn-primary btn-block mb-4">Zaloguj się</button>
   <div  v-if="setError" class="error">
     {{ errorMsg }}
   </div>
@@ -35,24 +36,43 @@ export default {
     },
     methods:{
     checkAuth(){
-      if(this.login && this.password==="admin"){
-        this.$router.push({path:'/logged'})
-      }else{
-        this.errorMsg="Invalid credentials";
-        this.setError=true;
-      }
+        if(this.login && this.password==='admin'){
+          this.$router.push('/logged')
+        }else{
+          this.errorMsg='Wprowadzono niepoprawne dane'
+          this.setError=true
+        }
     }
     }
-    
-
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
+$bg-color:linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
 form{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+nav{
+  padding: 0;
+  margin: 0;
+}
+.login{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  background-color: #FFDEE9;
+background-image:$bg-color;
+
+}
+.logo span{
+  color:#eea8c0;
+  font-size: 5em;
+  font-weight: 700;
 }
 .error{
   height: 10vh;

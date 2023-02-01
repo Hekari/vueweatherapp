@@ -1,14 +1,15 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex";
 
 export default createStore({
   state: {
+    LoginFlag: false,
   },
-  getters: {
-  },
+  getters: {},
   mutations: {
+    SET_LOGIN_FLAG(state, flag) {
+      state.LoginFlag = flag;
+    },
   },
-  actions: {
-  },
-  modules: {
-  }
-})
+  actions: {},
+  modules: {},
+});

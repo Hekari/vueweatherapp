@@ -159,7 +159,7 @@ options: this.chartOptions,
         this.humidityChart.destroy();
         this.showCurrentCityH=false;
       }
-  }
+  },
   
   
   }
