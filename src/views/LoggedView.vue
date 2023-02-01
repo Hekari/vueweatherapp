@@ -1,20 +1,20 @@
 <template>
-  <nav>
-
-    <router-link to="/">Logout</router-link> 
-  </nav>
     <div class="Logged">
-      <form class="d-flex" role="search">
-      <input  v-model="searchTerm" class="form-control me-2" type="search" placeholder="Dodaj kolejne Miasto" aria-label="Search">
-      <button @click="addCity" class="btn btn-outline-success" type="submit">Dodaj</button>
+      <nav>
+    <router-link to="/" class="logout">Logout</router-link> 
+  </nav>
+      <form>
+      <input  v-model="searchTerm"  type="search" placeholder="Dodaj kolejne Miasto" aria-label="Search">
+      <button @click="addCity" class="logged_btn btn btn-outline-success" type="submit">Dodaj</button>
       </form>
-    <h1>Obserwowane miasta</h1>
+    <main>
+      <h1 class="pt-5">Obserwowane miasta</h1>
     <ul>
       <li v-for="city in cities" :key="city.id">
         {{ city.name }} ({{ city.temp }}°C, {{ city.humidity }}%)
-        <button @click="showChart(city.id)">Wykres</button>
-        <button @click="deleteCity(city)">Usuń</button>
-        <button @click="hideChart">Zamknij wykres</button>
+        <button class="logged_btn" @click="showChart(city.id)">Wykres</button>
+        <button class="logged_btn" @click="deleteCity(city)">Usuń</button>
+        <button class="logged_btn" @click="hideChart">Zamknij wykres</button>
       </li>
     </ul>
     <div v-if="showChartForCity" class="charts">
@@ -27,6 +27,7 @@
         <canvas  id="humidity"></canvas>
       </div>
     </div>
+    </main>
   </div>
 </template>
 
@@ -137,7 +138,8 @@ options: this.chartOptions,
     this.cities.splice(index, 1);
   },
   
-  addCity() {
+  addCity(e) {
+    e.preventDefault();
     const jsonFile = require('./city.list.json');
       // // Konwersja pliku JSON na tablicę
       const jsonArray = Object.values(jsonFile);
@@ -167,18 +169,85 @@ options: this.chartOptions,
 </script>
 
 <style lang="scss" scoped>
+$bg-color:linear-gradient(0deg, #FFDEE9 0%, #B5FFFC 100%);
+$fontcolor:#eea8c0;
+$fontcolor2:#B5FFFC;
+.Logged{
+background-image: $bg-color;
+height: 100vh;
+width: 100%;
+}
+@mixin styled_btn{
+  background:none;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border: none;
+        top: 1vh;
+        width: 150px;
+        height: 50px;
+        z-index: 1;
+        padding: 10px 25px;
+        color: black;
+}
+@mixin styled_btn_after{
+  content: '';
+        left: 0;
+        top: 0;
+        position: absolute;
+        height: 100%;
+        border: 1px solid $fontcolor;
+        width: 100%;
+        opacity: 1;
+        transition: transform 0.15s ease-out 0
+}
+@mixin styled_btn_before{
+  content: '';
+        top: 5px;
+        right: 5px;
+        z-index: -1;
+        position: absolute;
+        height: 100%;
+        background-color: white;
+        width: 100%;
+        transition: transform 0.15s ease-out 0s;
+}
 li{
   list-style-type: none;
-}
-*,*::after,*::before{
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
 }
 nav{
   display: flex;
   flex-direction: row-reverse;
   padding: 0;
   margin-right: 2rem;
+}
+form{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+form input{
+  width: 50vw;
+}
+.logged_btn{
+  @include styled_btn();
+  margin-left: 2vw;
+}
+.logged_btn::after{
+  @include styled_btn_after();
+}
+.logged_btn::before{
+  @include styled_btn_before();
+}
+main{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.logout{
+  background-color: #fff;
+  color: $fontcolor;
+  font-weight: 600;
 }
 </style>
